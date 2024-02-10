@@ -49,4 +49,27 @@ public class ProductService : BaseService, IProductService
 			Status = Status.Success
 		};
 	}
+
+	public async Task<Response<ProductWithBidsDto>> GetProductById(Guid productId)
+	{
+		var product = await _context.Products
+			.Include(p => p.Bids)
+			.ThenInclude(b => b.Bidder)
+			.FirstOrDefaultAsync(p => p.Id == productId);
+		if (product == null)
+		{
+			return new Response<ProductWithBidsDto>
+			{
+				Message = $"Product with id {productId} was not found",
+				Status = Status.Error
+			};
+		}
+
+		return new Response<ProductWithBidsDto>
+		{
+			Value = _mapper.Map<ProductWithBidsDto>(product),
+			Message = $"Product fetched succesfuly",
+			Status = Status.Success
+		};
+	}
 }
