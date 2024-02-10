@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Auction.Shared.Response;
+using Auction.Common.Response;
 using Newtonsoft.Json;
 
 namespace Auction.WebAPI.Middlewares;
@@ -25,9 +25,9 @@ public class GlobalExceptionMiddleware
             response.ContentType = "application/json";
             response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            var result = new Response()
+            var result = new Response<string>()
             {
-                Value = ex.Message,
+                Message = ex.Message,
                 Status = Status.Error
             };
 

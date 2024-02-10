@@ -1,4 +1,4 @@
-﻿namespace Auction.Shared.Helpers;
+﻿namespace Auction.Common.Helpers;
 
 public class JwtOptionsHelper
 {

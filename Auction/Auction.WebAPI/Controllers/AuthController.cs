@@ -1,5 +1,8 @@
-﻿using Auction.BLL.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+
+using Auction.BLL.Interfaces;
+using Auction.Common.Dtos.User;
+using Auction.Common.Response;
 
 namespace Auction.WebAPI.Controllers;
 
@@ -13,4 +16,64 @@ public class AuthController : ControllerBase
     {
         _authService = authService;
     }
+
+	[HttpPost("sign-in")]
+	public async Task<ActionResult> SignIn([FromBody] SignInUserDto userDto)
+    {
+        var response = await _authService.SignInAsync(userDto);
+
+		if (response.Status == Status.Success)
+        {
+            var refreshToken = await _authService.GenerateRefreshToken(response.Value);
+            HttpContext.Response.Cookies.Append("token", refreshToken.Value, new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(7),
+                HttpOnly = true,
+                Secure = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.None
+            });
+
+            return Ok(response);
+		}
+
+		return BadRequest(response);
+    }
+
+	[HttpPost("sign-up")]
+	public async Task<ActionResult> SignUp([FromBody] SignUpUserDto userDto)
+    {
+		var response = await _authService.CreateAsync(userDto);
+
+		if (response.Status == Status.Success)
+		{
+			var refreshToken = await _authService.GenerateRefreshToken(response.Value);
+			HttpContext.Response.Cookies.Append("token", refreshToken.Value, new CookieOptions
+			{
+				Expires = DateTime.Now.AddDays(7),
+				HttpOnly = true,
+				Secure = true,
+				IsEssential = true,
+				SameSite = SameSiteMode.None
+			});
+
+			return Ok(response);
+		}
+        
+		return BadRequest(response);
+	}
+
+	[HttpPost("refresh")]
+	public async Task<ActionResult> Refresh()
+    {
+		var refreshToken = HttpContext.Request.Cookies["token"];
+		var response = await _authService.GenerateAccessToken(refreshToken);
+
+		if (response.Status == Status.Success)
+		{
+			return Ok(response);
+		}
+
+		return BadRequest(response);
+	}
 }
