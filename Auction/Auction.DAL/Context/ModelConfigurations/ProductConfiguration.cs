@@ -1,6 +1,7 @@
 ﻿using Auction.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace Auction.DAL.Context.ModelConfigurations
 {
@@ -20,6 +21,14 @@ namespace Auction.DAL.Context.ModelConfigurations
                 .WithMany(u => u.WonAuctions)
                 .HasForeignKey(p => p.WinnerId)
                 .IsRequired(false);
+
+            builder
+                .Property(p => p.Price)
+                .HasColumnType("decimal(18, 2)");
+
+            builder
+                .Property(p => p.MinimalBid)
+                .HasColumnType("decimal(18, 2)");
 
             builder.Property(p => p.Title)
                 .IsRequired();

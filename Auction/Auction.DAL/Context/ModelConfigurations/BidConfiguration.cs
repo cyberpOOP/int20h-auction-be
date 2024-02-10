@@ -13,12 +13,17 @@ namespace Auction.DAL.Context.ModelConfigurations
             builder
                 .HasOne(b => b.Bidder)
                 .WithMany(u => u.Bids)
-                .HasForeignKey(b => b.BidderId);
+                .HasForeignKey(b => b.BidderId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder
                 .HasOne(b => b.Product)
                 .WithMany(p => p.Bids)
                 .HasForeignKey(b => b.ProductId);
+
+            builder
+                .Property(p => p.Price)
+                .HasColumnType("decimal(18, 2)");
 
             builder.Property(b => b.Price)
                 .IsRequired();

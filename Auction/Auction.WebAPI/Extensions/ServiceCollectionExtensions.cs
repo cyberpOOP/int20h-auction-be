@@ -2,7 +2,9 @@
 using Auction.BLL.Interfaces;
 using Auction.BLL.Services;
 using Auction.Common.Helpers;
+using Auction.DAL.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Auction.WebAPI.Extensions;
@@ -11,7 +13,7 @@ public static class ServiceCollectionExtensions
 {
     public static void RegisterCustomServices(this IServiceCollection services, IConfiguration configuration)
     {
-        
+        services.AddDbContext<AuctionContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
         services.Configure<JwtOptionsHelper>(configuration.GetSection("Jwt"));
         services.AddScoped<IAuthService, AuthService>();
         services.AddTransient<IProductService, ProductService>();

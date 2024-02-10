@@ -26,11 +26,6 @@ namespace Auction.DAL.Context.ModelConfigurations
                 .WithOne(p => p.Winner)
                 .HasForeignKey(p => p.WinnerId)
                 .IsRequired(false);
-
-            builder
-                .HasMany(u => u.Bids)
-                .WithOne(b => b.Bidder)
-                .HasForeignKey(b => b.BidderId);
         }
     }
 }
