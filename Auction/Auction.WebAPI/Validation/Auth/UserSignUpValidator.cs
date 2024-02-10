@@ -14,8 +14,8 @@ namespace EasyTest.WebAPI.Validation.Auth
 
 			RuleFor(x => x.LastName)
 				.NotEmpty()
-				.MinimumLength(5)
-				.WithMessage("Last name is too short. Minimum length is 5 symbols.");
+				.MinimumLength(2)
+				.WithMessage("Last name is too short. Minimum length is 2 symbols.");
 
 			RuleFor(x => x.Email)
 				.NotEmpty().WithMessage("Email is required.")
