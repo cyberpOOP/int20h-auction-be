@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
 {
     public static void RegisterCustomServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AuctionContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        services.AddDbContext<AuctionContext>(options => options.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]));
         services.Configure<JwtOptionsHelper>(configuration.GetSection("Jwt"));
         services.AddScoped<IMigrationHelper, MigrationHelper>();
         services.AddScoped<IAuthService, AuthService>();
