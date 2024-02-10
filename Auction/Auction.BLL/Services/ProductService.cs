@@ -116,12 +116,15 @@ public class ProductService : BaseService, IProductService
 		{
 			products.Take(filterDto.Take.Value);
 		}
-		return new FilterResponse<IEnumerable<ProductDto>>()
+		var productsList = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(await products.ToListAsync());
+
+
+        return new FilterResponse<IEnumerable<ProductDto>>()
 		{
 			Count = count,
 			Skip = skip,
 			Page = filterDto.Take ?? 0,
-			Value = await products.ToListAsync() as IEnumerable<ProductDto>,
+			Value =  productsList,
 			Status = Status.Success,
 			Message = "Items successfully retreived!"
 		};

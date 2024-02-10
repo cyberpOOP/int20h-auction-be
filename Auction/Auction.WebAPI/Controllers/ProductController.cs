@@ -29,7 +29,7 @@ public class ProductController : ControllerBase
 
         return BadRequest(response);
     }
-    [HttpPost]
+    [HttpPost("Get")]
     public async Task<ActionResult> Get([FromBody] FilterProductDto filterDto)
     {
         var response = await _productService.GetProducts(filterDto);
