@@ -31,6 +31,11 @@ public class ProductService : BaseService, IProductService
 		product.Seller = user;
 		product.Phone = user.Phone;
 		product.Status = ProductStatus.Active;
+		product.CreatedAt = DateTime.UtcNow;
+		product.UpdatedAt = DateTime.UtcNow;
+
+		await _context.Products.AddAsync(product);
+		await _context.SaveChangesAsync();
 
 		return new Response<ProductDto>()
 		{
