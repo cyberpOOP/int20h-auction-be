@@ -12,12 +12,16 @@ namespace Auction.BLL.Services;
 
 public class BidService : BaseService, IBidService
 {
-	public BidService(AuctionContext context, IMapper mapper) : base(context, mapper) { }
+	private readonly ICredentialService _credentialService;
+	public BidService(AuctionContext context, IMapper mapper, ICredentialService credentialService) : base(context, mapper)
+	{
+		_credentialService = credentialService;
+	}
 
 	public async Task<Response<ProductDto>> CreateBid(CreateBidDto bidDto)
 	{
 		var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == bidDto.BidderEmail);
-		if( user == null)
+		if (user == null)
 		{
 			return new Response<ProductDto>
 			{
@@ -36,7 +40,7 @@ public class BidService : BaseService, IBidService
 			};
 		}
 
-		if(product.Price >= bidDto.Price)
+		if (product.Price >= bidDto.Price)
 		{
 			return new Response<ProductDto>
 			{
