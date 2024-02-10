@@ -37,6 +37,11 @@ public class ProductService : BaseService, IProductService
 		}
 
 		var product = _mapper.Map<Product>(productDto);
+		if(productDto.MinimalBid != null)
+		{
+			product.Price = productDto.MinimalBid.Value;
+		}
+
 		product.Seller = user;
 		product.Phone = user.Phone;
 		product.Status = ProductStatus.Active;

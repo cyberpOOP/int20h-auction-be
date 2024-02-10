@@ -15,7 +15,7 @@ public class Product : BaseEntity
     public DateTime? EndDate { get; set; }
     public User Seller { get; set; }
     public Guid SellerId { get; set; }
-    public ICollection<Bid> Bids { get; set; }
+    public ICollection<Bid> Bids { get; set; } = new List<Bid>();
     public User? Winner { get; set; }
     public Guid? WinnerId { get; set; }
 }
