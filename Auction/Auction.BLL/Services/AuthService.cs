@@ -40,6 +40,8 @@ public class AuthService : BaseService, IAuthService
 
 		user = _mapper.Map<User>(userDto);
 		user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+		user.CreatedAt = DateTime.UtcNow;
+		user.UpdatedAt = DateTime.UtcNow;
 
 		await _context.Users.AddAsync(user);
 		await _context.SaveChangesAsync();
@@ -50,7 +52,7 @@ public class AuthService : BaseService, IAuthService
 		return new Response<UserDto>()
 		{
 			Value = userResponse,
-			Message = "You have sign in succesfully",
+			Message = "You have sign up succesfully",
 			Status = Status.Success
 		};
 	}

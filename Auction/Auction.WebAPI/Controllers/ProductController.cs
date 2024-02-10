@@ -1,4 +1,7 @@
 ﻿using Auction.BLL.Interfaces;
+using Auction.Common.Dtos.Bid;
+using Auction.Common.Dtos.Product;
+using Auction.Common.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auction.WebAPI.Controllers;
@@ -12,5 +15,18 @@ public class ProductController : ControllerBase
     public ProductController(IProductService productService)
     {
         _productService = productService;
+    }
+
+    [HttpPost]
+	public async Task<ActionResult> Create([FromBody] CreateProductDto productDto)
+    {
+        var response = await _productService.CreateProduct(productDto);
+
+        if(response.Status == Status.Success)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
     }
 }
