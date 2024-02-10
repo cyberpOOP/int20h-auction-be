@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auction.WebAPI", "Auction.WebAPI\Auction.WebAPI.csproj", "{5DCCB40C-7B7A-4D54-B8B1-819F5E0679D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auction.WebAPI", "Auction.WebAPI\Auction.WebAPI.csproj", "{5DCCB40C-7B7A-4D54-B8B1-819F5E0679D2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Auction.Shared", "Auction.Shared\Auction.Shared.shproj", "{29061CBE-2120-4AD2-AD3C-50FD29B26E07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auction.BLL", "Auction.BLL\Auction.BLL.csproj", "{634C1A03-8A13-40A5-B305-9E96115E7778}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auction.DAL", "Auction.DAL\Auction.DAL.csproj", "{38F7866C-C141-4A14-B6BC-A6BC284DF84D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,11 +21,23 @@ Global
 		{5DCCB40C-7B7A-4D54-B8B1-819F5E0679D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DCCB40C-7B7A-4D54-B8B1-819F5E0679D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DCCB40C-7B7A-4D54-B8B1-819F5E0679D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{634C1A03-8A13-40A5-B305-9E96115E7778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{634C1A03-8A13-40A5-B305-9E96115E7778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{634C1A03-8A13-40A5-B305-9E96115E7778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{634C1A03-8A13-40A5-B305-9E96115E7778}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F7866C-C141-4A14-B6BC-A6BC284DF84D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F7866C-C141-4A14-B6BC-A6BC284DF84D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F7866C-C141-4A14-B6BC-A6BC284DF84D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F7866C-C141-4A14-B6BC-A6BC284DF84D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F3092D63-D50C-4FC2-8020-A3AE76819723}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Auction.Shared\Auction.Shared.projitems*{29061cbe-2120-4ad2-ad3c-50fd29b26e07}*SharedItemsImports = 13
+		Auction.Shared\Auction.Shared.projitems*{38f7866c-c141-4a14-b6bc-a6bc284df84d}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
