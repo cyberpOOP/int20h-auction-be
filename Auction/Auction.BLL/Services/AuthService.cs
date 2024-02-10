@@ -141,7 +141,7 @@ public class AuthService : BaseService, IAuthService
 			{
 				new Claim("firstName", user.FirstName),
 				new Claim("lastName", user.LastName),
-				new Claim("email", user.Email)
+				new Claim(ClaimTypes.Email, user.Email)
 			};
 
 		var tokenHandler = new JwtSecurityTokenHandler();

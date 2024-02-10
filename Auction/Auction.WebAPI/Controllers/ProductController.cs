@@ -29,6 +29,18 @@ public class ProductController : ControllerBase
 
         return BadRequest(response);
     }
+    [HttpPost("Get")]
+    public async Task<ActionResult> Get([FromBody] FilterProductDto filterDto)
+    {
+        var response = await _productService.GetProducts(filterDto);
+
+        if (response.Status == Status.Success)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
 
     [HttpGet("{id}")]
     public async Task<ActionResult> GetById(Guid id)
