@@ -26,10 +26,12 @@ namespace Auction.BLL.Mappers
 		{
 			CreateMap<Product, ProductDto>().ReverseMap();
 			CreateMap<CreateProductDto, Product>().ReverseMap();
+			CreateMap<Product, ProductWithBidsDto>().ReverseMap();
 		}
 
 		private void ConfigureBidMapper()
 		{
+			CreateMap<Bid, BidDto>().ReverseMap();
 			CreateMap<Bid, CreateBidDto>().ReverseMap();
 		}
 	}
