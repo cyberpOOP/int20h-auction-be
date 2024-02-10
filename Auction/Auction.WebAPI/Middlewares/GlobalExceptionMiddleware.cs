@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Auction.Shared.Response;
+using Auction.Common.Response;
 using Newtonsoft.Json;
 
 namespace Auction.WebAPI.Middlewares;

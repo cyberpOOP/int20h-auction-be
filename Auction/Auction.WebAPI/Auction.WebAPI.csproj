@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Auction.BLL\Auction.BLL.csproj" />
+    <ProjectReference Include="..\Auction.Common\Auction.Common.csproj" />
+    <ProjectReference Include="..\Auction.DAL\Auction.DAL.csproj" />
   </ItemGroup>
 
 </Project>

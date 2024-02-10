@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Auction.BLL.Interfaces;
 using Auction.BLL.Services;
-using Auction.Shared.Helpers;
+using Auction.Common.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
 {
     public static void RegisterCustomServices(this IServiceCollection services, IConfiguration configuration)
     {
+        
         services.Configure<JwtOptionsHelper>(configuration.GetSection("Jwt"));
         services.AddScoped<IAuthService, AuthService>();
         services.AddTransient<IProductService, ProductService>();

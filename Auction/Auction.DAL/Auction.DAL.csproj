@@ -6,10 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <Import Project="..\Auction.Shared\Auction.Shared.projitems" Label="Shared" />
-
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Auction.Common\Auction.Common.csproj" />
   </ItemGroup>
 
 </Project>

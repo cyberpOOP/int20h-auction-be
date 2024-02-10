@@ -1,4 +1,4 @@
-﻿namespace Auction.Shared.Response;
+﻿namespace Auction.Common.Response;
 
 public class Response
 {

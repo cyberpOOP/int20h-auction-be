@@ -1,4 +1,4 @@
-﻿namespace Auction.Shared.Enums
+﻿namespace Auction.Common.Enums
 {
     public enum ProductStatus
     {

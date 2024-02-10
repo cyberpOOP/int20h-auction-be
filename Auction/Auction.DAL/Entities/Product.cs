@@ -1,5 +1,5 @@
-﻿using Auction.DAL.Entities.Abstract;
-using Auction.Shared.Enums;
+﻿using Auction.Common.Enums;
+using Auction.DAL.Entities.Abstract;
 
 namespace Auction.DAL.Entities;
 
