@@ -12,6 +12,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Auction.DAL.Interfaces;
 using Auction.DAL.Helpers;
+using System.Security.Claims;
 
 namespace Auction.WebAPI.Extensions;
 
@@ -26,6 +27,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IProductService, ProductService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IBidService, BidService>();
+        services.AddScoped<ICredentialService, CredentialService>();
     }
 
     public static void AddCustomAutoMapperProfiles(this IServiceCollection services)
@@ -63,6 +65,23 @@ public static class ServiceCollectionExtensions
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
                 ValidateLifetime = true,
+            };
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = async context =>
+                {
+                    var email = context?.Principal?.FindFirst("email");
+                    if (email == null)
+                    {
+                        context?.Fail("NameClaimType is missing in the token.");
+                    }
+                    var serviceProvider = services.BuildServiceProvider();
+                    var credentialService = serviceProvider.GetRequiredService<ICredentialService>();
+                    if (! await credentialService.SetUser(email!.Value))
+                    {
+                        context?.Fail("No user found for provided email!");
+                    }
+                }
             };
         });
         services.AddAuthorization();
