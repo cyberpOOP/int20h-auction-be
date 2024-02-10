@@ -7,4 +7,5 @@ namespace Auction.BLL.Interfaces;
 public interface IProductService
 {
 	Task<Response<ProductDto>> CreateProduct(CreateProductDto productDto);
+    Task<Response<IEnumerable<ProductDto>>> GetProducts(FilterProductDto filterDto);
 }
