@@ -12,7 +12,6 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Auction.DAL.Interfaces;
 using Auction.DAL.Helpers;
-using System.Security.Claims;
 
 namespace Auction.WebAPI.Extensions;
 
@@ -20,8 +19,21 @@ public static class ServiceCollectionExtensions
 {
     public static void RegisterCustomServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AuctionContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-        services.Configure<JwtOptionsHelper>(configuration.GetSection("Jwt"));
+        services.AddDbContext<AuctionContext>(options => options.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]));
+        services.Configure<JwtOptionsHelper>(options =>
+        {
+			options.Audience = configuration["Jwt:Audience"];
+			options.Issuer = configuration["Jwt:Issuer"];
+			options.Key = configuration["Jwt:Key"];
+			if (int.TryParse(configuration["Jwt:TokenExpiration"], out int tokenExpiration))
+			{
+				options.TokenExpiration = tokenExpiration;
+			}
+			else
+			{
+				options.TokenExpiration = 60;
+			}
+		});
         services.AddScoped<IMigrationHelper, MigrationHelper>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddTransient<IProductService, ProductService>();
