@@ -1,3 +1,4 @@
+using Auction.DAL.Interfaces;
 using Auction.WebAPI.Extensions;
 using Auction.WebAPI.Middlewares;
 
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.RegisterCustomServices(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCustomAutoMapperProfiles();
+builder.Services.AddFluentValidation();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,5 +33,14 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
+SeedDatabase();
 app.Run();
+
+void SeedDatabase()
+{
+	using (var scope = app.Services.CreateScope())
+	{
+		var migrationHelper = scope.ServiceProvider.GetRequiredService<IMigrationHelper>();
+		migrationHelper.Migrate();
+	}
+}
