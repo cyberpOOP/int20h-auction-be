@@ -9,5 +9,8 @@
     <Import_RootNamespace>Auction.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\JwtOptionsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Response\Response.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Response\Status.cs" />
   </ItemGroup>
 </Project>
