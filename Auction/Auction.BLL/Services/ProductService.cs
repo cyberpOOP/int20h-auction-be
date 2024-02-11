@@ -1,5 +1,6 @@
 ﻿using Auction.BLL.Interfaces;
 using Auction.BLL.Services.Abstract;
+using Auction.Common.Dtos.File;
 using Auction.Common.Dtos.Product;
 using Auction.Common.Dtos.User;
 using Auction.Common.Enums;
@@ -7,6 +8,7 @@ using Auction.Common.Response;
 using Auction.DAL.Context;
 using Auction.DAL.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,14 +16,17 @@ namespace Auction.BLL.Services;
 
 public class ProductService : BaseService, IProductService
 {
-	private readonly ICredentialService _credentialService;
+    private readonly IAzureManagementService _azureManagementService;
+    private readonly ICredentialService _credentialService;
 	public ProductService(
 		AuctionContext context,
 		IMapper mapper,
-		ICredentialService credentialService) : base(context, mapper)
+		ICredentialService credentialService,
+        IAzureManagementService azureManagementService) : base(context, mapper)
 	{
 		_credentialService = credentialService;
-	}
+        _azureManagementService = azureManagementService;
+    }
 
 	public async Task<Response<ProductDto>> CreateProduct(CreateProductDto productDto)
 	{
@@ -246,4 +251,21 @@ public class ProductService : BaseService, IProductService
 		};
 	}
 
+    public async Task<Response<FileDto>> AddPhoto(IFormFile file)
+    {
+        var fileDto = new NewFileDto()
+        {
+            Stream = file.OpenReadStream(),
+            FileName = file.FileName
+        };
+
+        var addedFile = await _azureManagementService.AddFileToBlobStorage(fileDto);
+
+        return new Response<FileDto>()
+        {
+            Value = addedFile,
+            Message = "You have updated user photo succesfully",
+            Status = Status.Success
+        };
+    }
 }
