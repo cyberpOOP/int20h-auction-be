@@ -58,7 +58,7 @@ public class ProductController : ControllerBase
 	}
 
 	[HttpPut("{id}")]
-	public async Task<ActionResult> Update(Guid id, [FromBody] CreateProductDto productDto)
+	public async Task<ActionResult> Update(Guid id, [FromBody] EditProductDto productDto)
 	{
 		var response = await _productService.UpdateProduct(id, productDto);
 
@@ -70,10 +70,10 @@ public class ProductController : ControllerBase
 		return BadRequest(response);
 	}
 
-	[HttpGet("{id}/participators")]
-	public async Task<ActionResult> GetParticipators(Guid id)
+	[HttpDelete("{id}")]
+	public async Task<ActionResult> Delete(Guid id)
 	{
-		var response = await _productService.GetParticipators(id);
+		var response = await _productService.Delete(id);
 
 		if (response.Status == Status.Success)
 		{
