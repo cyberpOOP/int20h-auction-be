@@ -129,27 +129,33 @@ public class ProductService : BaseService, IProductService
                     };
             };
 		}
-		var count = products.Count();
-		var skip = filterDto.Skip ?? 0;
-		if (filterDto.Skip < count)
-		{
-			products.Skip(filterDto.Skip.Value);
-		}
-		if (filterDto.Take != null && filterDto.Take < count - skip)
-		{
-			products.Take(filterDto.Take.Value);
-		}
-		var productsList = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(await products.ToListAsync());
+        var count = products.Count();
+        var skip = filterDto.Skip ?? 0;
 
+        if (skip < count)
+        {
+            products = products.Skip(skip);
+        }
+
+        if (filterDto.Take != null && filterDto.Take < count - skip)
+        {
+            products = products.Take(filterDto.Take.Value);
+        }
+
+        var productsList = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(await products.ToListAsync());
+
+        var totalPages = (int)Math.Ceiling((double)count / (filterDto.Take ?? 1));
+        var currentPage = (int)Math.Floor((double)skip / (filterDto.Take ?? 1)) + 1;
 
         return new FilterResponse<IEnumerable<ProductDto>>()
-		{
-			Count = count,
-			Skip = skip,
-			Page = filterDto.Take ?? 0,
-			Value =  productsList,
-			Status = Status.Success,
-			Message = "Items successfully retreived!"
-		};
-	}
+        {
+            Count = count,
+            Skip = skip,
+            Page = totalPages > 0 ? currentPage : 1,
+            Value = productsList,
+            Status = Status.Success,
+            Message = "Items successfully retrieved!"
+        };
+
+    }
 }
