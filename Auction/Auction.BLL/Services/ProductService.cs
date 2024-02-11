@@ -1,6 +1,5 @@
 ﻿using Auction.BLL.Interfaces;
 using Auction.BLL.Services.Abstract;
-using Auction.Common.Dtos.Bid;
 using Auction.Common.Dtos.Product;
 using Auction.Common.Dtos.User;
 using Auction.Common.Enums;
@@ -76,7 +75,8 @@ public class ProductService : BaseService, IProductService
 			.Include(p => p.Bids)
 			.ThenInclude(b => b.Bidder)
 			.FirstOrDefaultAsync(p => p.Id == productId);
-		if (product == null)
+
+        if (product == null)
 		{
 			return new Response<ProductWithBidsDto>
 			{
@@ -85,12 +85,24 @@ public class ProductService : BaseService, IProductService
 			};
 		}
 
-		return new Response<ProductWithBidsDto>
-		{
-			Value = _mapper.Map<ProductWithBidsDto>(product),
-			Message = $"Product fetched succesfuly",
-			Status = Status.Success
-		};
+		var response = new Response<ProductWithBidsDto>
+        {
+            Value = _mapper.Map<ProductWithBidsDto>(product),
+            Message = $"Product fetched succesfuly",
+            Status = Status.Success
+        };
+
+        response.Value.Users = product.Bids
+            .Where(b => b.ProductId == productId)
+            .GroupBy(b => b.Bidder)
+            .Select(group => new UserProductDto
+            {
+                Email = group.Key.Email,
+                MaxBid = group.Max(b => b.Price),
+                BidCount = group.Count()
+            });
+
+		return response;
 	}
 
 	public async Task<Response<IEnumerable<ProductDto>>> GetProducts(FilterProductDto filterDto)
