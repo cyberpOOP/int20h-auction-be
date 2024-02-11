@@ -71,6 +71,7 @@ public class ProductService : BaseService, IProductService
 	public async Task<Response<ProductWithBidsDto>> GetProductById(Guid productId)
 	{
 		var product = await _context.Products
+			.Include(p => p.Seller)
 			.Include(p => p.Bids)
 			.ThenInclude(b => b.Bidder)
 			.FirstOrDefaultAsync(p => p.Id == productId);

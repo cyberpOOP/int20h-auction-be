@@ -14,6 +14,7 @@ namespace Auction.Common.Dtos.Product
 		public UserDto Seller { get; set; }
 		public ProductStatus Status { get; set; }
 		public UserDto? Winner { get; set; }
+		public DateTime? EndDate { get; set; }
 		public ICollection<BidDto> Bids { get; set; }
 	}
 }
