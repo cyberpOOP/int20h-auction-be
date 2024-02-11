@@ -18,5 +18,6 @@ namespace Auction.Common.Dtos.Product
 		public ICollection<BidDto> Bids { get; set; }
 		public IEnumerable<UserProductDto> Users { get; set; }
 		public string? ImageLinks { get; set; }
+		public decimal? MinimalBid { get; set; }
 	}
 }
