@@ -6,5 +6,5 @@ namespace Auction.BLL.Interfaces;
 
 public interface IBidService
 {
-	Task<Response<ProductDto>> CreateBid(CreateBidDto bidDto);
+	Task<Response<ProductWithBidsDto>> CreateBid(CreateBidDto bidDto);
 }

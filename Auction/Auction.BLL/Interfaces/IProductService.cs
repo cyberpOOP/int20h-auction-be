@@ -1,5 +1,4 @@
-﻿using Auction.Common.Dtos.Bid;
-using Auction.Common.Dtos.Product;
+﻿using Auction.Common.Dtos.Product;
 using Auction.Common.Response;
 
 namespace Auction.BLL.Interfaces;
@@ -7,4 +6,6 @@ namespace Auction.BLL.Interfaces;
 public interface IProductService
 {
 	Task<Response<ProductDto>> CreateProduct(CreateProductDto productDto);
+	Task<Response<ProductWithBidsDto>> GetProductById(Guid productId);
+    Task<Response<IEnumerable<ProductDto>>> GetProducts(FilterProductDto filterDto);
 }

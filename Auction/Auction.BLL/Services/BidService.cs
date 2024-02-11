@@ -12,33 +12,41 @@ namespace Auction.BLL.Services;
 
 public class BidService : BaseService, IBidService
 {
-	public BidService(AuctionContext context, IMapper mapper) : base(context, mapper) { }
-
-	public async Task<Response<ProductDto>> CreateBid(CreateBidDto bidDto)
+	private readonly ICredentialService _credentialService;
+	public BidService(AuctionContext context, IMapper mapper, ICredentialService credentialService) : base(context, mapper)
 	{
-		var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == bidDto.BidderEmail);
-		if( user == null)
+		_credentialService = credentialService;
+	}
+
+	public async Task<Response<ProductWithBidsDto>> CreateBid(CreateBidDto bidDto)
+	{
+		var userId = _credentialService.UserId;
+		var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+		if (user == null)
 		{
-			return new Response<ProductDto>
+			return new Response<ProductWithBidsDto>
 			{
-				Message = $"Seller with email {bidDto.BidderEmail} was not found",
+				Message = "Error with user",
 				Status = Status.Error
 			};
 		}
 
-		var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == bidDto.ProductId);
+		var product = await _context.Products
+			.Include(p => p.Bids)
+			.ThenInclude(b => b.Bidder)
+			.FirstOrDefaultAsync(p => p.Id == bidDto.ProductId);
 		if (product == null)
 		{
-			return new Response<ProductDto>
+			return new Response<ProductWithBidsDto>
 			{
 				Message = $"Product with id {bidDto.ProductId} was not found",
 				Status = Status.Error
 			};
 		}
 
-		if(product.Price >= bidDto.Price)
+		if (product.Price >= bidDto.Price)
 		{
-			return new Response<ProductDto>
+			return new Response<ProductWithBidsDto>
 			{
 				Message = $"You cannot place a bid that less or equal current bid",
 				Status = Status.Error
@@ -59,9 +67,9 @@ public class BidService : BaseService, IBidService
 
 		await _context.SaveChangesAsync();
 
-		return new Response<ProductDto>
+		return new Response<ProductWithBidsDto>
 		{
-			Value = _mapper.Map<ProductDto>(product),
+			Value = _mapper.Map<ProductWithBidsDto>(product),
 			Message = $"You successfuly placed new bid",
 			Status = Status.Success
 		};

@@ -20,16 +20,19 @@ namespace Auction.BLL.Mappers
 			CreateMap<User, UserDto>().ReverseMap();
 			CreateMap<SignInUserDto, User>().ReverseMap();
 			CreateMap<SignUpUserDto, User>().ReverseMap();
-		}
+            CreateMap<EditUserDto, User>().ReverseMap();
+        }
 
 		private void ConfigureProductMapper()
 		{
 			CreateMap<Product, ProductDto>().ReverseMap();
 			CreateMap<CreateProductDto, Product>().ReverseMap();
+			CreateMap<Product, ProductWithBidsDto>().ReverseMap();
 		}
 
 		private void ConfigureBidMapper()
 		{
+			CreateMap<Bid, BidDto>().ReverseMap();
 			CreateMap<Bid, CreateBidDto>().ReverseMap();
 		}
 	}

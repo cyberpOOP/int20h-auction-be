@@ -1,9 +1,10 @@
-﻿using Auction.Common.Dtos.User;
+﻿using Auction.Common.Dtos.Bid;
+using Auction.Common.Dtos.User;
 using Auction.Common.Enums;
 
 namespace Auction.Common.Dtos.Product
 {
-	public class ProductDto
+	public class ProductWithBidsDto
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; }
@@ -12,6 +13,7 @@ namespace Auction.Common.Dtos.Product
 		public string? Phone { get; set; }
 		public UserDto Seller { get; set; }
 		public ProductStatus Status { get; set; }
-		public string ImageLinks { get; set; }
+		public UserDto? Winner { get; set; }
+		public ICollection<BidDto> Bids { get; set; }
 	}
 }

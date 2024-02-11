@@ -1,11 +1,13 @@
 ﻿using Auction.BLL.Interfaces;
 using Auction.Common.Dtos.Bid;
 using Auction.Common.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auction.WebAPI.Controllers;
 
 [Route("api/[controller]")]
+[Authorize]
 [ApiController]
 public class BidController : ControllerBase
 {
