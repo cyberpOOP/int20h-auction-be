@@ -1,5 +1,6 @@
 ﻿using Auction.BLL.Interfaces;
 using Auction.BLL.Services.Abstract;
+using Auction.Common.Dtos.File;
 using Auction.Common.Dtos.Product;
 using Auction.Common.Dtos.User;
 using Auction.Common.Enums;
@@ -7,6 +8,7 @@ using Auction.Common.Response;
 using Auction.DAL.Context;
 using Auction.DAL.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,18 +16,21 @@ namespace Auction.BLL.Services;
 
 public class ProductService : BaseService, IProductService
 {
-	private readonly ICredentialService _credentialService;
+    private readonly IAzureManagementService _azureManagementService;
+    private readonly ICredentialService _credentialService;
 	public ProductService(
-		AuctionContext context, 
+		AuctionContext context,
 		IMapper mapper,
-		ICredentialService credentialService) : base(context, mapper) 
+		ICredentialService credentialService,
+        IAzureManagementService azureManagementService) : base(context, mapper)
 	{
 		_credentialService = credentialService;
-	}
+        _azureManagementService = azureManagementService;
+    }
 
 	public async Task<Response<ProductDto>> CreateProduct(CreateProductDto productDto)
 	{
-		if(productDto.EndDate <= DateTime.UtcNow)
+		if (productDto.EndDate <= DateTime.UtcNow)
 		{
 			return new Response<ProductDto>
 			{
@@ -46,7 +51,7 @@ public class ProductService : BaseService, IProductService
 		}
 
 		var product = _mapper.Map<Product>(productDto);
-		if(productDto.MinimalBid != null)
+		if (productDto.MinimalBid != null)
 		{
 			product.Price = productDto.MinimalBid.Value;
 		}
@@ -132,53 +137,136 @@ public class ProductService : BaseService, IProductService
 		{
 			switch (filterDto.OrderBy)
 			{
-                case "Title":
-                    products = products.OrderBy(p => p.Title);
-                    break;
-                case "Price":
-                    products = products.OrderBy(p => p.Price);
-                    break;
-                case "MinimalBid":
-                    products = products.OrderBy(p => p.MinimalBid);
-                    break;
-                case "EndDate":
-                    products = products.OrderBy(p => p.EndDate);
-                    break;
-                default:
-                    return new Response<IEnumerable<ProductDto>>()
-                    {
-                        Message = $"Invalid OrderBy argument",
-                        Status = Status.Error
-                    };
-            };
+				case "Title":
+					products = products.OrderBy(p => p.Title);
+					break;
+				case "Price":
+					products = products.OrderBy(p => p.Price);
+					break;
+				case "MinimalBid":
+					products = products.OrderBy(p => p.MinimalBid);
+					break;
+				case "EndDate":
+					products = products.OrderBy(p => p.EndDate);
+					break;
+				default:
+					return new Response<IEnumerable<ProductDto>>()
+					{
+						Message = $"Invalid OrderBy argument",
+						Status = Status.Error
+					};
+			};
 		}
-        var count = products.Count();
-        var skip = filterDto.Skip ?? 0;
+		var count = products.Count();
+		var skip = filterDto.Skip ?? 0;
 
-        if (skip < count)
+		if (skip < count)
+		{
+			products = products.Skip(skip);
+		}
+
+		if (filterDto.Take != null && filterDto.Take < count - skip)
+		{
+			products = products.Take(filterDto.Take.Value);
+		}
+
+		var productsList = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(await products.ToListAsync());
+
+		var totalPages = (int)Math.Ceiling((double)count / (filterDto.Take ?? 1));
+		var currentPage = (int)Math.Floor((double)skip / (filterDto.Take ?? 1)) + 1;
+
+		return new FilterResponse<IEnumerable<ProductDto>>()
+		{
+			Count = count,
+			Skip = skip,
+			Page = totalPages > 0 ? currentPage : 1,
+			Value = productsList,
+			Status = Status.Success,
+			Message = "Items successfully retrieved!"
+		};
+
+	}
+
+	public async Task<Response<ProductDto>> UpdateProduct(Guid productId, EditProductDto productDto)
+	{
+		var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+		if (product == null)
+		{
+			return new Response<ProductDto>
+			{
+				Message = $"Product with id {productId} was not found",
+				Status = Status.Error
+			};
+		}
+
+		if (productDto.Title != null)
+			product.Title = productDto.Title;
+
+		if (productDto.Description != null)
+			product.Description = productDto.Description;
+
+		if (productDto.MinimalBid != null)
+			product.MinimalBid = productDto.MinimalBid;
+
+		if (productDto.ImageLinks != null)
+			product.ImageLinks = productDto.ImageLinks;
+
+		if (productDto.EndDate != null)
+			product.EndDate = productDto.EndDate;
+
+		if (productDto.Status != null)
+			product.Status = productDto.Status.Value;
+
+		_context.Products.Update(product);
+		await _context.SaveChangesAsync();
+
+		return new Response<ProductDto>
+		{
+			Value = _mapper.Map<ProductDto>(product),
+			Message = $"Product updated succesfully",
+			Status = Status.Success
+		};
+	}
+
+	public async Task<Response<bool>> Delete(Guid productId)
+	{
+		var product = await _context.Products.Include(p => p.Bids).FirstOrDefaultAsync(p => p.Id == productId);
+		if (product == null)
+		{
+			return new Response<bool>
+			{
+				Message = $"Product with id {productId} was not found",
+				Status = Status.Error
+			};
+		}
+
+		_context.Bids.RemoveRange(product.Bids);
+		_context.Products.Remove(product);
+		await _context.SaveChangesAsync();
+
+		return new Response<bool>
+		{
+			Value = true,
+			Message = $"Product was deleted successfuly",
+			Status = Status.Success
+		};
+	}
+
+    public async Task<Response<FileDto>> AddPhoto(IFormFile file)
+    {
+        var fileDto = new NewFileDto()
         {
-            products = products.Skip(skip);
-        }
-
-        if (filterDto.Take != null && filterDto.Take < count - skip)
-        {
-            products = products.Take(filterDto.Take.Value);
-        }
-
-        var productsList = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(await products.ToListAsync());
-
-        var totalPages = (int)Math.Ceiling((double)count / (filterDto.Take ?? 1));
-        var currentPage = (int)Math.Floor((double)skip / (filterDto.Take ?? 1)) + 1;
-
-        return new FilterResponse<IEnumerable<ProductDto>>()
-        {
-            Count = count,
-            Skip = skip,
-            Page = totalPages > 0 ? currentPage : 1,
-            Value = productsList,
-            Status = Status.Success,
-            Message = "Items successfully retrieved!"
+            Stream = file.OpenReadStream(),
+            FileName = file.FileName
         };
 
+        var addedFile = await _azureManagementService.AddFileToBlobStorage(fileDto);
+
+        return new Response<FileDto>()
+        {
+            Value = addedFile,
+            Message = "You have updated user photo succesfully",
+            Status = Status.Success
+        };
     }
 }
