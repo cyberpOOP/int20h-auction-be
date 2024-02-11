@@ -1,4 +1,5 @@
 ﻿using Auction.BLL.Interfaces;
+using Auction.BLL.Services;
 using Auction.Common.Dtos.Bid;
 using Auction.Common.Dtos.Product;
 using Auction.Common.Response;
@@ -58,7 +59,7 @@ public class ProductController : ControllerBase
 	}
 
 	[HttpPut("{id}")]
-	public async Task<ActionResult> Update(Guid id, [FromBody] CreateProductDto productDto)
+	public async Task<ActionResult> Update(Guid id, [FromBody] EditProductDto productDto)
 	{
 		var response = await _productService.UpdateProduct(id, productDto);
 
@@ -70,10 +71,10 @@ public class ProductController : ControllerBase
 		return BadRequest(response);
 	}
 
-	[HttpGet("{id}/participators")]
-	public async Task<ActionResult> GetParticipators(Guid id)
+	[HttpDelete("{id}")]
+	public async Task<ActionResult> Delete(Guid id)
 	{
-		var response = await _productService.GetParticipators(id);
+		var response = await _productService.Delete(id);
 
 		if (response.Status == Status.Success)
 		{
@@ -82,4 +83,19 @@ public class ProductController : ControllerBase
 
 		return BadRequest(response);
 	}
+
+    [HttpPost("addPhoto")]
+    public async Task<ActionResult> AddPhoto()
+    {
+        var formCollection = await Request.ReadFormAsync();
+        var file = formCollection.Files.FirstOrDefault();
+
+        if (file is not null && file.Length > 0)
+        {
+            var result = await _productService.AddPhoto(file);
+            return Ok(result);
+        }
+
+        return BadRequest("No files found in the request.");
+    }
 }

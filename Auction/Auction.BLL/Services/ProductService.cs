@@ -1,5 +1,6 @@
 ﻿using Auction.BLL.Interfaces;
 using Auction.BLL.Services.Abstract;
+using Auction.Common.Dtos.File;
 using Auction.Common.Dtos.Product;
 using Auction.Common.Dtos.User;
 using Auction.Common.Enums;
@@ -7,6 +8,7 @@ using Auction.Common.Response;
 using Auction.DAL.Context;
 using Auction.DAL.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,14 +16,17 @@ namespace Auction.BLL.Services;
 
 public class ProductService : BaseService, IProductService
 {
-	private readonly ICredentialService _credentialService;
+    private readonly IAzureManagementService _azureManagementService;
+    private readonly ICredentialService _credentialService;
 	public ProductService(
 		AuctionContext context,
 		IMapper mapper,
-		ICredentialService credentialService) : base(context, mapper)
+		ICredentialService credentialService,
+        IAzureManagementService azureManagementService) : base(context, mapper)
 	{
 		_credentialService = credentialService;
-	}
+        _azureManagementService = azureManagementService;
+    }
 
 	public async Task<Response<ProductDto>> CreateProduct(CreateProductDto productDto)
 	{
@@ -182,7 +187,7 @@ public class ProductService : BaseService, IProductService
 
 	}
 
-	public async Task<Response<ProductDto>> UpdateProduct(Guid productId, CreateProductDto productDto)
+	public async Task<Response<ProductDto>> UpdateProduct(Guid productId, EditProductDto productDto)
 	{
 		var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
 		if (product == null)
@@ -209,6 +214,9 @@ public class ProductService : BaseService, IProductService
 		if (productDto.EndDate != null)
 			product.EndDate = productDto.EndDate;
 
+		if (productDto.Status != null)
+			product.Status = productDto.Status.Value;
+
 		_context.Products.Update(product);
 		await _context.SaveChangesAsync();
 
@@ -220,30 +228,45 @@ public class ProductService : BaseService, IProductService
 		};
 	}
 
-	public async Task<Response<List<UserDto>>> GetParticipators(Guid productId)
+	public async Task<Response<bool>> Delete(Guid productId)
 	{
-		var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+		var product = await _context.Products.Include(p => p.Bids).FirstOrDefaultAsync(p => p.Id == productId);
 		if (product == null)
 		{
-			return new Response<List<UserDto>>
+			return new Response<bool>
 			{
 				Message = $"Product with id {productId} was not found",
 				Status = Status.Error
 			};
 		}
 
-		var users = _context.Bids
-			.Where(b => b.ProductId == product.Id)
-			.Select(b => b.Bidder)
-			.Distinct()
-			.ToList();
+		_context.Bids.RemoveRange(product.Bids);
+		_context.Products.Remove(product);
+		await _context.SaveChangesAsync();
 
-		return new Response<List<UserDto>>
+		return new Response<bool>
 		{
-			Value = _mapper.Map<List<UserDto>>(users),
-			Message = $"Participators retrieved succesfully",
-			Status = Status.Success	
+			Value = true,
+			Message = $"Product was deleted successfuly",
+			Status = Status.Success
 		};
 	}
 
+    public async Task<Response<FileDto>> AddPhoto(IFormFile file)
+    {
+        var fileDto = new NewFileDto()
+        {
+            Stream = file.OpenReadStream(),
+            FileName = file.FileName
+        };
+
+        var addedFile = await _azureManagementService.AddFileToBlobStorage(fileDto);
+
+        return new Response<FileDto>()
+        {
+            Value = addedFile,
+            Message = "You have updated user photo succesfully",
+            Status = Status.Success
+        };
+    }
 }
