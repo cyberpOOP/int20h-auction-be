@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auction.DAL", "Auction.DAL\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auction.Common", "Auction.Common\Auction.Common.csproj", "{CFDA1619-0582-400E-B8AE-23857D0D3EEF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auction.TimerJob", "Auction.TimerJob\Auction.TimerJob.csproj", "{2F184CDB-C312-4C82-B7B7-B9E5765DA4CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{CFDA1619-0582-400E-B8AE-23857D0D3EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFDA1619-0582-400E-B8AE-23857D0D3EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFDA1619-0582-400E-B8AE-23857D0D3EEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F184CDB-C312-4C82-B7B7-B9E5765DA4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F184CDB-C312-4C82-B7B7-B9E5765DA4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F184CDB-C312-4C82-B7B7-B9E5765DA4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F184CDB-C312-4C82-B7B7-B9E5765DA4CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
