@@ -2,11 +2,13 @@
 using Auction.Common.Dtos.Bid;
 using Auction.Common.Dtos.Product;
 using Auction.Common.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auction.WebAPI.Controllers;
 
 [Route("api/[controller]")]
+[Authorize]
 [ApiController]
 public class ProductController : ControllerBase
 {
@@ -23,6 +25,18 @@ public class ProductController : ControllerBase
         var response = await _productService.CreateProduct(productDto);
 
         if(response.Status == Status.Success)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
+    [HttpPost("Get")]
+    public async Task<ActionResult> Get([FromBody] FilterProductDto filterDto)
+    {
+        var response = await _productService.GetProducts(filterDto);
+
+        if (response.Status == Status.Success)
         {
             return Ok(response);
         }
