@@ -139,9 +139,7 @@ public class AuthService : BaseService, IAuthService
 	{
 		var claims = new List<Claim>
 			{
-				new Claim("firstName", user.FirstName),
-				new Claim("lastName", user.LastName),
-				new Claim(ClaimTypes.Email, user.Email)
+				new(ClaimTypes.Email, user.Email)
 			};
 
 		var tokenHandler = new JwtSecurityTokenHandler();
@@ -168,7 +166,7 @@ public class AuthService : BaseService, IAuthService
 
 		if (token != null)
 		{
-			return token.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
+			return token.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email || claim.Type == "email")?.Value;
 		}
 		else
 		{
