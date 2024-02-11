@@ -89,8 +89,7 @@ public static class ServiceCollectionExtensions
                         context?.Fail("NameClaimType is missing in the token.");
                         return;
                     }
-                    var serviceProvider = services.BuildServiceProvider();
-                    var credentialService = serviceProvider.GetRequiredService<ICredentialService>();
+                    var credentialService = context?.HttpContext.RequestServices.GetRequiredService<ICredentialService>();
                     if (! await credentialService.SetUser(email!.Value))
                     {
                         context?.Fail("No user found for provided email!");

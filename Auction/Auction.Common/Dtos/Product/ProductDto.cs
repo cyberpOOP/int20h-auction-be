@@ -12,5 +12,6 @@ namespace Auction.Common.Dtos.Product
 		public string? Phone { get; set; }
 		public UserDto Seller { get; set; }
 		public ProductStatus Status { get; set; }
+		public string ImageLinks { get; set; }
 	}
 }
