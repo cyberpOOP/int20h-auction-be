@@ -16,5 +16,7 @@ namespace Auction.Common.Dtos.Product
 		public UserDto? Winner { get; set; }
 		public DateTime? EndDate { get; set; }
 		public ICollection<BidDto> Bids { get; set; }
+		public IEnumerable<UserProductDto> Users { get; set; }
+		public string? ImageLinks { get; set; }
 	}
 }
