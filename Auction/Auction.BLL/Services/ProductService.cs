@@ -9,7 +9,6 @@ using Auction.DAL.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Auction.BLL.Services;
 
@@ -99,7 +98,7 @@ public class ProductService : BaseService, IProductService
 		}
 		if (!filterDto.Title.IsNullOrEmpty())
 		{
-			products = products.Where(p => p.Title.Contains(filterDto.Title!, StringComparison.OrdinalIgnoreCase));
+			products = products.Where(p => p.Title.ToLower().Contains(filterDto.Title!.ToLower()));
 		}
 		if (!filterDto.OnlyWithMyBids != null && filterDto.OnlyWithMyBids == true)
 		{
