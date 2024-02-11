@@ -6,6 +6,6 @@ namespace Auction.BLL.Interfaces;
 
 public interface IUserService
 {
-    Task<Response<UserDto>> UpdateUser(SignUpUserDto userDto);
+    Task<Response<UserDto>> UpdateUser(EditUserDto userDto);
     Task<Response<bool>> DeleteUser(Guid userId);
 }

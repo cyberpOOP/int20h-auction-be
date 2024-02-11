@@ -11,6 +11,7 @@ namespace Auction.BLL.Services
         private Guid userId;
 
         public Guid UserId => userId;
+
         public async Task<bool> SetUser(string email)
         {
             if (email.IsNullOrEmpty())

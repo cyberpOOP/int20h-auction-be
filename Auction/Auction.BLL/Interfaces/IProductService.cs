@@ -7,4 +7,5 @@ public interface IProductService
 {
 	Task<Response<ProductDto>> CreateProduct(CreateProductDto productDto);
 	Task<Response<ProductWithBidsDto>> GetProductById(Guid productId);
+    Task<Response<IEnumerable<ProductDto>>> GetProducts(FilterProductDto filterDto);
 }

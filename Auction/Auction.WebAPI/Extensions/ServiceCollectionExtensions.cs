@@ -84,13 +84,13 @@ public static class ServiceCollectionExtensions
                 OnTokenValidated = async context =>
                 {
                     var email = context?.Principal?.FindFirst(ClaimTypes.Email);
-                    if (email == null)
+                    if (email == null || email.Value == null)
                     {
                         context?.Fail("NameClaimType is missing in the token.");
+                        return;
                     }
-                    var serviceProvider = services.BuildServiceProvider();
-                    var credentialService = serviceProvider.GetRequiredService<ICredentialService>();
-                    if (! credentialService.SetUser(email!.Value))
+                    var credentialService = context?.HttpContext.RequestServices.GetRequiredService<ICredentialService>();
+                    if (! await credentialService.SetUser(email!.Value))
                     {
                         context?.Fail("No user found for provided email!");
                     }

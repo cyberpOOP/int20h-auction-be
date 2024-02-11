@@ -23,7 +23,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> EditProfile([FromBody] SignUpUserDto userDto)
+    public async Task<ActionResult> EditProfile([FromBody] EditUserDto userDto)
     {
         var response = await _userService.UpdateUser(userDto);
 
@@ -38,8 +38,7 @@ public class UserController : ControllerBase
     [HttpDelete]
     public async Task<ActionResult> DeleteProfile()
     {
-        var id = _credentialService.UserId;
-        var response = await _userService.DeleteUser(id);
+        var response = await _userService.DeleteUser(_credentialService.UserId);
 
         if (response.Status == Status.Success)
         {
