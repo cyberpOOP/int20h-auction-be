@@ -13,5 +13,6 @@ namespace Auction.Common.Dtos.Product
 		public UserDto Seller { get; set; }
 		public ProductStatus Status { get; set; }
 		public string ImageLinks { get; set; }
+		public decimal? MinimalBid { get; set; }
 	}
 }
