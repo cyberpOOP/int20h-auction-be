@@ -24,7 +24,8 @@ app.UseSwaggerUI();
 app.UseCors(opt => opt
     .AllowAnyHeader()
     .AllowAnyMethod()
-    .AllowAnyOrigin());
+	.AllowCredentials()
+    .SetIsOriginAllowed(origin => true));
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
