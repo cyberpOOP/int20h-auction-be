@@ -151,7 +151,7 @@ public class AuthService : BaseService, IAuthService
 			Subject = new ClaimsIdentity(claims),
 			Issuer = _jwtOptionsHelper.Issuer,
 			Audience = _jwtOptionsHelper.Audience,
-			Expires = DateTime.UtcNow.AddSeconds(_jwtOptionsHelper.TokenExpiration),
+			Expires = DateTime.UtcNow.AddMinutes(_jwtOptionsHelper.TokenExpiration),
 			SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptionsHelper.Key)), SecurityAlgorithms.HmacSha256)
 		};
 

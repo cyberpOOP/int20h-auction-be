@@ -25,12 +25,22 @@ public class ProductService : BaseService, IProductService
 
 	public async Task<Response<ProductDto>> CreateProduct(CreateProductDto productDto)
 	{
-		var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == productDto.SellerEmail);
+		if(productDto.EndDate <= DateTime.UtcNow)
+		{
+			return new Response<ProductDto>
+			{
+				Message = "Wrong end date",
+				Status = Status.Error
+			};
+		}
+
+		var userId = _credentialService.UserId;
+		var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 		if (user == null)
 		{
 			return new Response<ProductDto>
 			{
-				Message = $"Seller with email {productDto.SellerEmail} was not found",
+				Message = "Error with user",
 				Status = Status.Error
 			};
 		}

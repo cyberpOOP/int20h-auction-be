@@ -11,41 +11,42 @@ namespace Auction.WebAPI.Controllers;
 [ApiController]
 public class ProductController : ControllerBase
 {
-    private readonly IProductService _productService;
+	private readonly IProductService _productService;
 
-    public ProductController(IProductService productService)
-    {
-        _productService = productService;
-    }
+	public ProductController(IProductService productService)
+	{
+		_productService = productService;
+	}
 
-    [HttpPost]
+	[HttpPost]
+	[Authorize]
 	public async Task<ActionResult> Create([FromBody] CreateProductDto productDto)
-    {
-        var response = await _productService.CreateProduct(productDto);
+	{
+		var response = await _productService.CreateProduct(productDto);
 
-        if(response.Status == Status.Success)
-        {
-            return Ok(response);
-        }
+		if (response.Status == Status.Success)
+		{
+			return Ok(response);
+		}
 
-        return BadRequest(response);
-    }
-    [HttpPost("Get")]
-    public async Task<ActionResult> Get([FromBody] FilterProductDto filterDto)
-    {
-        var response = await _productService.GetProducts(filterDto);
+		return BadRequest(response);
+	}
+	[HttpPost("Get")]
+	public async Task<ActionResult> Get([FromBody] FilterProductDto filterDto)
+	{
+		var response = await _productService.GetProducts(filterDto);
 
-        if (response.Status == Status.Success)
-        {
-            return Ok(response);
-        }
+		if (response.Status == Status.Success)
+		{
+			return Ok(response);
+		}
 
-        return BadRequest(response);
-    }
+		return BadRequest(response);
+	}
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult> GetById(Guid id)
-    {
+	[HttpGet("{id}")]
+	public async Task<ActionResult> GetById(Guid id)
+	{
 		var response = await _productService.GetProductById(id);
 
 		if (response.Status == Status.Success)
