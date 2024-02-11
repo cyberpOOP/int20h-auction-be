@@ -168,7 +168,7 @@ public class AuthService : BaseService, IAuthService
 
 		if (token != null)
 		{
-			return token.Claims.FirstOrDefault(claim => claim.Type == "email")?.Value;
+			return token.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value;
 		}
 		else
 		{
