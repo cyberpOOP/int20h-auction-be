@@ -1,12 +1,14 @@
 using Auction.DAL.Interfaces;
 using Auction.WebAPI.Extensions;
 using Auction.WebAPI.Middlewares;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.RegisterAzureConfiguration(builder.Configuration);
 builder.Services.RegisterCustomServices(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCustomAutoMapperProfiles();
@@ -14,6 +16,10 @@ builder.Services.AddFluentValidation();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueCountLimit = int.MaxValue;
+});
 
 var app = builder.Build();
 

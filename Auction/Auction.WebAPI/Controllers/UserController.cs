@@ -1,6 +1,5 @@
 ﻿using Auction.BLL.Interfaces;
-using Auction.BLL.Services;
-using Auction.Common.Dtos.Bid;
+using Auction.Common.Dtos.File;
 using Auction.Common.Dtos.User;
 using Auction.Common.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -46,5 +45,32 @@ public class UserController : ControllerBase
         }
 
         return BadRequest(response);
+    }
+
+    [HttpPost("addPhoto")]
+    public async Task<ActionResult> AddPhoto()
+    {
+        var formCollection = await Request.ReadFormAsync();
+        var file = formCollection.Files.FirstOrDefault();
+
+        if (file is not null && file.Length > 0)
+        {
+            var result = await _userService.UpdatePhoto(file, _credentialService.UserId);
+            return Ok(result);
+        }
+
+        return BadRequest("No files found in the request.");
+    }
+
+    [HttpDelete("deletePhoto")]
+    public async Task<ActionResult> DeletePhoto([FromBody] FileDto fileDto)
+    {
+        if (fileDto is not null)
+        {
+            var result = await _userService.DeletePhoto(fileDto, _credentialService.UserId);
+            return Ok(result);
+        }
+
+        return BadRequest("No file url.");
     }
 }

@@ -56,4 +56,30 @@ public class ProductController : ControllerBase
 
 		return BadRequest(response);
 	}
+
+	[HttpPut("{id}")]
+	public async Task<ActionResult> Update(Guid id, [FromBody] CreateProductDto productDto)
+	{
+		var response = await _productService.UpdateProduct(id, productDto);
+
+		if (response.Status == Status.Success)
+		{
+			return Ok(response);
+		}
+
+		return BadRequest(response);
+	}
+
+	[HttpGet("{id}/participators")]
+	public async Task<ActionResult> GetParticipators(Guid id)
+	{
+		var response = await _productService.GetParticipators(id);
+
+		if (response.Status == Status.Success)
+		{
+			return Ok(response);
+		}
+
+		return BadRequest(response);
+	}
 }
