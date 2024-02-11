@@ -13,6 +13,7 @@ using FluentValidation;
 using Auction.DAL.Interfaces;
 using Auction.DAL.Helpers;
 using System.Security.Claims;
+using Azure.Storage.Blobs;
 
 namespace Auction.WebAPI.Extensions;
 
@@ -41,6 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IBidService, BidService>();
         services.AddScoped<ICredentialService, CredentialService>();
+        services.AddTransient<IAzureManagementService, AzureManagementService>();
     }
 
     public static void AddCustomAutoMapperProfiles(this IServiceCollection services)
@@ -98,5 +100,16 @@ public static class ServiceCollectionExtensions
             };
         });
         services.AddAuthorization();
+    }
+
+    public static void RegisterAzureConfiguration(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetSection("AzureBlobStorageSettings")
+                .GetValue<string>("ConnectionString");
+
+        services.AddScoped(_ =>
+                new BlobServiceClient(connectionString));
+
+        services.AddSingleton(configuration.GetSection("AzureBlobStorageSettings").Get<BlobContainerOptionsHelper>());
     }
 }

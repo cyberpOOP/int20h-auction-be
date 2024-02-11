@@ -1,4 +1,5 @@
 ﻿using Auction.BLL.Interfaces;
+using Auction.Common.Dtos.File;
 using Auction.Common.Dtos.User;
 using Auction.Common.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -50,16 +51,26 @@ public class UserController : ControllerBase
     public async Task<ActionResult> AddPhoto()
     {
         var formCollection = await Request.ReadFormAsync();
-        var file = formCollection.Keys;
+        var file = formCollection.Files.FirstOrDefault();
 
-        if (file != null)
+        if (file is not null && file.Length > 0)
         {
-            // Обробка файлу
-            return Ok();
+            var result = await _userService.UpdatePhoto(file, _credentialService.UserId);
+            return Ok(result);
         }
-        else
+
+        return BadRequest("No files found in the request.");
+    }
+
+    [HttpDelete("deletePhoto")]
+    public async Task<ActionResult> DeletePhoto([FromBody] FileDto fileDto)
+    {
+        if (fileDto is not null)
         {
-            return BadRequest("No files found in the request.");
+            var result = await _userService.DeletePhoto(fileDto, _credentialService.UserId);
+            return Ok(result);
         }
+
+        return BadRequest("No file url.");
     }
 }

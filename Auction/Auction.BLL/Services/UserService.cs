@@ -1,18 +1,22 @@
 ﻿using Auction.BLL.Interfaces;
 using Auction.BLL.Services.Abstract;
+using Auction.Common.Dtos.File;
 using Auction.Common.Dtos.User;
 using Auction.Common.Response;
 using Auction.DAL.Context;
-using Auction.DAL.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auction.BLL.Services;
 
 public class UserService : BaseService, IUserService
 {
-	public UserService(AuctionContext context, IMapper mapper) : base(context, mapper)
+    private readonly IAzureManagementService _azureManagementService;
+
+	public UserService(AuctionContext context, IMapper mapper, IAzureManagementService azureManagementService) : base(context, mapper)
 	{
+        _azureManagementService = azureManagementService;
 	}
 
     public async Task<Response<bool>> DeleteUser(Guid userId)
@@ -60,6 +64,66 @@ public class UserService : BaseService, IUserService
         {
             Value = userResponse,
             Message = "You have updated user succesfully",
+            Status = Status.Success
+        };
+    }
+
+    public async Task<Response<UserDto>> UpdatePhoto(IFormFile file, Guid userId)
+    {
+        var fileDto = new NewFileDto()
+        {
+            Stream = file.OpenReadStream(),
+            FileName = file.FileName
+        };
+
+        var user = await _context.Users.FirstOrDefaultAsync(user => user.Id.Equals(userId)) ?? throw new ArgumentNullException("User was not found");
+
+        if (!string.IsNullOrEmpty(user.AvatarUrl))
+        {
+            var oldFile = new FileDto()
+            {
+                Url = user.AvatarUrl
+            };
+
+            await _azureManagementService.DeleteFromBlob(oldFile);
+        }
+
+        var addedFile = await _azureManagementService.AddFileToBlobStorage(fileDto);
+
+        user.AvatarUrl = addedFile.Url;
+
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        var userResponse = _mapper.Map<UserDto>(user);
+
+        return new Response<UserDto>()
+        {
+            Value = userResponse,
+            Message = "You have updated user photo succesfully",
+            Status = Status.Success
+        };
+    }
+
+    public async Task<Response<UserDto>> DeletePhoto(FileDto fileDto, Guid userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(user => user.Id.Equals(userId)) ?? throw new ArgumentNullException("User was not found");
+
+        await _azureManagementService.DeleteFromBlob(fileDto);
+
+        user.AvatarUrl = string.Empty;
+
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        var userResponse = _mapper.Map<UserDto>(user);
+
+        return new Response<UserDto>()
+        {
+            Value = userResponse,
+            Message = "You have deleted user photo succesfully",
             Status = Status.Success
         };
     }
