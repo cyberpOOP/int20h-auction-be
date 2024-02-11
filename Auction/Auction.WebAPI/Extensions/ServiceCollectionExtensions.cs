@@ -12,6 +12,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Auction.DAL.Interfaces;
 using Auction.DAL.Helpers;
+using System.Security.Claims;
 
 namespace Auction.WebAPI.Extensions;
 
@@ -82,14 +83,14 @@ public static class ServiceCollectionExtensions
             {
                 OnTokenValidated = async context =>
                 {
-                    var email = context?.Principal?.FindFirst("email");
+                    var email = context?.Principal?.FindFirst(ClaimTypes.Email);
                     if (email == null)
                     {
                         context?.Fail("NameClaimType is missing in the token.");
                     }
                     var serviceProvider = services.BuildServiceProvider();
                     var credentialService = serviceProvider.GetRequiredService<ICredentialService>();
-                    if (! await credentialService.SetUser(email!.Value))
+                    if (! credentialService.SetUser(email!.Value))
                     {
                         context?.Fail("No user found for provided email!");
                     }
