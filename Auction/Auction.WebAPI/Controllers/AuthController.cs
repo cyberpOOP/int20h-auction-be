@@ -3,6 +3,7 @@
 using Auction.BLL.Interfaces;
 using Auction.Common.Dtos.User;
 using Auction.Common.Response;
+using Microsoft.Net.Http.Headers;
 
 namespace Auction.WebAPI.Controllers;
 
@@ -25,13 +26,14 @@ public class AuthController : ControllerBase
 		if (response.Status == Status.Success)
         {
             var refreshToken = await _authService.GenerateRefreshToken(response.Value);
+           
             Response.Cookies.Append("X-Refresh-Token", refreshToken.Value, new CookieOptions
             {
                 Expires = DateTime.Now.AddDays(7),
                 HttpOnly = true,
-                Secure = false,
+                Secure = true,
                 IsEssential = true,
-                SameSite = SameSiteMode.None
+                SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None
             });
 
             return Ok(response);
@@ -54,7 +56,7 @@ public class AuthController : ControllerBase
 				HttpOnly = true,
 				Secure = true,
 				IsEssential = true,
-				SameSite = SameSiteMode.None
+				SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None
 			});
 
 			return Ok(response);

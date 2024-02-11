@@ -76,8 +76,9 @@ public static class ServiceCollectionExtensions
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"])),
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateIssuerSigningKey = true,
                 ValidateLifetime = true,
+                RequireExpirationTime = true,
+                ValidateIssuerSigningKey = true
             };
             options.Events = new JwtBearerEvents
             {
