@@ -104,12 +104,18 @@ public static class ServiceCollectionExtensions
 
     public static void RegisterAzureConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetSection("AzureBlobStorageSettings")
-                .GetValue<string>("ConnectionString");
+        var connectionString = configuration["AzureBlobStorageSettings:ConnectionString"];
 
         services.AddScoped(_ =>
                 new BlobServiceClient(connectionString));
 
-        services.AddSingleton(configuration.GetSection("AzureBlobStorageSettings").Get<BlobContainerOptionsHelper>());
+        services.AddSingleton(provider =>
+        {
+            var options = new BlobContainerOptionsHelper
+            {
+                BlobContainerName = configuration["AzureBlobStorageSettings:BlobContainerName"]
+            };
+            return options;
+        });
     }
 }
