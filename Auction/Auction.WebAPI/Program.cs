@@ -1,6 +1,7 @@
 using Auction.DAL.Interfaces;
 using Auction.WebAPI.Extensions;
 using Auction.WebAPI.Middlewares;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,10 @@ builder.Services.AddFluentValidation();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueCountLimit = int.MaxValue;
+});
 
 var app = builder.Build();
 
